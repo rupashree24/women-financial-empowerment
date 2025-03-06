@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMI Calculator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>EMI Calculator</h1>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/budget">Budgeting & Expense Tracker</a>
+            <a href="/portfolio">Investment Portfolio Tracker</a>
+            <a href="/resource">Educational Resources</a>
+            <a href="/sipcalc">SIP Calculator</a>
+            <a href="/emi">EMI Calculator</a>
+            <a href="/community">Community Hub</a>
+            <a href="/games">Games</a>
+        </nav>
+    </header>
+    
+    <main>
+        <section>
+            <h2>Calculate Your EMI</h2>
+            <form method="POST">
+                <label for="loan_amount">Loan Amount</label>
+                <input type="number" id="loan_amount" name="loan_amount" required>
+                
+                <label for="rate_of_interest">Rate of Interest (%)</label>
+                <input type="number" id="rate_of_interest" name="rate_of_interest" step="0.1" required>
+                
+                <label for="loan_term">Loan Term (Months)</label>
+                <input type="number" id="loan_term" name="loan_term" required>
+                
+                <button type="submit">Calculate</button>
+            </form>
+
+            {% if emi is not none %}
+                <h3>EMI: ₹{{ emi }}</h3>
+            {% endif %}
+        </section>
+    </main>
+</body>
+</html>

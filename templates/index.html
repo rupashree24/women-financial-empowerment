@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Empowerment for Women</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header>
+        <h1>Empowering Women Financially</h1>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/budget">Budgeting & Expense Tracker</a>
+            <a href="/portfolio">Investment Portfolio</a>
+            <a href="/resource">Resources</a>
+            <a href="/sipcalc">SIP Calculator</a>
+            <a href="/emi">EMI Calculator</a>
+            <a href="/community">Community Hub</a>
+            <a href="/games">Games</a>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Take Control of Your Financial Future</h2>
+            <p>Plan, track, and invest wisely with our interactive tools tailored to your financial goals.</p>
+            <img src="{{ url_for('static', filename='images/women-finance.png') }}" alt="Women in Finance" width="100%">
+            <button onclick="location.href='/resources'">Explore Resources</button>
+        </section>
+    </main>
+    <div id="chat-container">
+        <div id="chatbox">
+            <p class="bot-message">Hi! I'm your AI assistant. Ask me anything.</p>
+        </div>
+        <input type="text" id="userInput" placeholder="Type a message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+    
+    <script>
+        function sendMessage() {
+            let userText = document.getElementById("userInput").value;
+            let chatbox = document.getElementById("chatbox");
+    
+            if (userText.trim() === "") return;
+    
+            // Add user message to chatbox
+            chatbox.innerHTML += `<p class="user-message">${userText}</p>`;
+    
+            // Send message to backend (Flask)
+            fetch("/chatbot", {
+                method: "POST",
+                body: JSON.stringify({ message: userText }),
+                headers: { "Content-Type": "application/json" }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Add AI response to chatbox
+                chatbox.innerHTML += `<p class="bot-message">${data.response}</p>`;
+            });
+    
+            document.getElementById("userInput").value = "";
+        }
+    </script>
+    
+    <style>
+        #chat-container {
+            width: 300px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+        }
+        #chatbox {
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 5px;
+        }
+        .user-message {
+            text-align: right;
+            color: blue;
+        }
+        .bot-message {
+            text-align: left;
+            color: green;
+        }
+    </style>
+    
+
+</body>
+</html>
+

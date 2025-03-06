@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Games - Financial Education</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f9f6f2;
+        }
+        h1 {
+            color: #4CAF50;
+        }
+        .game-container {
+            display: none;
+            width: 80%;
+            margin: auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 2px 2px 10px gray;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .draggable {
+            padding: 10px;
+            margin: 10px;
+            background: #ffcc80;
+            display: inline-block;
+            cursor: grab;
+            border-radius: 5px;
+        }
+        .dropzone {
+            min-height: 50px;
+            border: 2px dashed #aaa;
+            padding: 10px;
+            margin: 10px;
+            border-radius: 5px;
+        }
+        .quiz-container input {
+            width: 50%;
+            padding: 8px;
+            margin: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Financial Education Games</h1>
+    <header>
+        
+        <nav>
+            <a href="/">Home</a>
+            <a href="/budget">Budgeting</a>
+            <a href="/portfolio">Investment Portfolio</a>
+            <a href="/resource">Resources</a>
+            <a href="/sipcalc">SIP Calculator</a>
+            <a href="/emi">EMI Calculator</a>
+            <a href="/community">Community Hub</a>
+            <a href="/games">Games</a>
+        </nav>
+    </header>
+
+    <label for="gameSelect">Choose a Game:</label>
+    <select id="gameSelect" onchange="showGame()">
+        <option value="">--Select--</option>
+        <option value="needsWants">Needs vs. Wants</option>
+        <option value="quizGame">Financial Quiz Show</option>
+    </select>
+
+    <!-- Needs vs Wants Game -->
+    <div id="needsWants" class="game-container">
+        <h2>Needs vs. Wants Game</h2>
+        <p>Drag the items into the correct category.</p>
+        <div id="items">
+            <div class="draggable" draggable="true" ondragstart="drag(event)" id="item1">Luxury Watch</div>
+            <div class="draggable" draggable="true" ondragstart="drag(event)" id="item2">Groceries</div>
+            <div class="draggable" draggable="true" ondragstart="drag(event)" id="item3">Rent</div>
+            <div class="draggable" draggable="true" ondragstart="drag(event)" id="item4">Gaming Console</div>
+            <div class="draggable" draggable="true" ondragstart="drag(event)" id="item5">Medicine</div>
+        </div>
+
+        <h3>Drag here:</h3>
+        <div class="dropzone" ondrop="drop(event, 'needs')" ondragover="allowDrop(event)">Needs</div>
+        <div class="dropzone" ondrop="drop(event, 'wants')" ondragover="allowDrop(event)">Wants</div>
+
+        <p><strong>Score: <span id="score">0</span>/5</strong></p>
+    </div>
+
+    <!-- Financial Quiz Show -->
+    <div id="quizGame" class="game-container">
+        <h2>Financial Quiz Show</h2>
+        <p id="question">Loading question...</p>
+        <input type="text" id="userAnswer" placeholder="Enter your answer here">
+        <button onclick="checkAnswer()">Submit</button>
+        <p id="feedback"></p>
+        <button onclick="nextQuestion()">Next Question</button>
+        <p><strong>Final Score: <span id="quizScore">0</span>/4</strong></p>
+    </div>
+
+    <script>
+        let score = 0; // Score for Needs vs. Wants
+        let correctItems = {
+            "item2": "needs", "item3": "needs", "item5": "needs",
+            "item1": "wants", "item4": "wants"
+        };
+
+        function showGame() {
+            document.getElementById("needsWants").style.display = "none";
+            document.getElementById("quizGame").style.display = "none";
+
+            let selectedGame = document.getElementById("gameSelect").value;
+            if (selectedGame) {
+                document.getElementById(selectedGame).style.display = "block";
+            }
+        }
+
+        function allowDrop(event) {
+            event.preventDefault();
+        }
+
+        function drag(event) {
+            event.dataTransfer.setData("text", event.target.id);
+        }
+
+        function drop(event, category) {
+            event.preventDefault();
+            let itemId = event.dataTransfer.getData("text");
+            let item = document.getElementById(itemId);
+
+            if (correctItems[itemId] === category) {
+                event.target.appendChild(item);
+                score++;
+                document.getElementById("score").innerText = score;
+            } else {
+                alert("Oops! That doesn't belong here.");
+            }
+        }
+
+        let quizQuestions = [
+            { q: "What is the best way to start saving money?", a: "Set up a budget and track expenses" },
+            { q: "What does 'APR' stand for in finance?", a: "Annual Percentage Rate" },
+            { q: "Which of these is a 'Need'?", a: "Paying rent" },
+            { q: "What is a good rule for emergency savings?", a: "Save at least 3-6 months of expenses" }
+        ];
+        let quizIndex = 0;
+        let quizScore = 0;
+
+        function nextQuestion() {
+            if (quizIndex < quizQuestions.length) {
+                document.getElementById("question").innerText = quizQuestions[quizIndex].q;
+                document.getElementById("userAnswer").value = "";
+                document.getElementById("feedback").innerText = "";
+            } else {
+                document.getElementById("question").innerText = "You have completed the quiz!";
+            }
+        }
+
+        function checkAnswer() {
+            let userAnswer = document.getElementById("userAnswer").value.trim().toLowerCase();
+            let correctAnswer = quizQuestions[quizIndex].a.toLowerCase();
+
+            if (userAnswer === correctAnswer) {
+                document.getElementById("feedback").innerText = "Correct!";
+                quizScore++;
+                document.getElementById("quizScore").innerText = quizScore;
+            } else {
+                document.getElementById("feedback").innerText = `Wrong! Correct answer: ${quizQuestions[quizIndex].a}`;
+            }
+            quizIndex++;
+        }
+
+        nextQuestion(); // Load the first quiz question
+    </script>
+
+</body>
+</html>

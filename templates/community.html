@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Hub</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; padding: 20px; background: #f9f9f9; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); }
+        h2 { text-align: center; }
+        form { margin-bottom: 20px; }
+        input, textarea, button { width: 100%; padding: 10px; margin: 5px 0; }
+        .post { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; background: #fff; }
+        .replies { margin-top: 10px; padding-left: 20px; }
+        .reply-box { margin-top: 5px; }
+        .votes { font-size: 14px; margin-left: 10px; color: green; }
+        .vote-btn { text-decoration: none; margin: 5px; }
+    </style>
+</head>
+<body>
+    <header>
+        
+        <nav>
+            <a href="/">Home</a>
+            <a href="/budget">Budgeting</a>
+            <a href="/portfolio">Investment Portfolio</a>
+            <a href="/resource">Resources</a>
+            <a href="/sipcalc">SIP Calculator</a>
+            <a href="/emi">EMI Calculator</a>
+            <a href="/community">Community Hub</a>
+            <a href="/games">Games</a>
+        </nav>
+    </header>
+    <div class="container">
+        <h2>Community & Learning Hub</h2>
+        
+        <!-- Form to Create a New Post -->
+        <form action="/community" method="POST">
+            <input type="text" name="username" placeholder="Your Name" required>
+            <textarea name="post_content" placeholder="Share your financial tip or ask a question..." required></textarea>
+            <button type="submit">Post</button>
+        </form>
+
+        <!-- Display All Community Posts -->
+        {% for post in posts %}
+        <div class="post">
+            <strong>{{ post.username }}</strong>: {{ post.post_content }}
+            <br>
+            <a class="vote-btn" href="{{ url_for('upvote', post_index=loop.index0) }}">👍</a> 
+            <a class="vote-btn" href="{{ url_for('downvote', post_index=loop.index0) }}">👎</a>
+            <span class="votes">Votes: {{ post.votes }}</span>
+
+            <!-- Reply Section -->
+            <div class="replies">
+                {% for reply in post.replies %}
+                <p>➡️ {{ reply }}</p>
+                {% endfor %}
+
+                <form class="reply-box" action="{{ url_for('reply', post_index=loop.index0) }}" method="POST">
+                    <input type="text" name="reply_content" placeholder="Write a reply..." required>
+                    <button type="submit">Reply</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investment Portfolio Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #4CAF50;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            box-shadow: 2px 2px 10px gray;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        input, button {
+            padding: 8px;
+            margin: 5px;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Investment Portfolio Tracker</h1>
+    <header>
+        
+        <nav>
+            <a href="/">Home</a>
+            <a href="/budget">Budgeting</a>
+            <a href="/portfolio">Investment Portfolio</a>
+            <a href="/resource">Resources</a>
+            <a href="/sipcalc">SIP Calculator</a>
+            <a href="/emi">EMI Calculator</a>
+            <a href="/community">Community Hub</a>
+            <a href="/games">Games</a>
+        </nav>
+    </header>
+    <div class="container">
+        <h3>Add New Investment</h3>
+        <input type="text" id="investmentType" placeholder="Investment Type (Stock, Crypto, etc.)">
+        <input type="number" id="amountInvested" placeholder="Invested Amount">
+        <input type="number" id="currentValue" placeholder="Current Value">
+        <button onclick="addInvestment()">Add Investment</button>
+
+        <h3>Your Portfolio</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Investment Type</th>
+                    <th>Invested Amount ($)</th>
+                    <th>Current Value ($)</th>
+                    <th>Profit/Loss ($)</th>
+                </tr>
+            </thead>
+            <tbody id="portfolioTable">
+                <!-- Investments will appear here -->
+            </tbody>
+        </table>
+
+        <h3>Total Invested: $<span id="totalInvested">0</span></h3>
+        <h3>Portfolio Value: $<span id="totalValue">0</span></h3>
+        <h3>Overall Profit/Loss: $<span id="totalProfit">0</span></h3>
+    </div>
+
+    <script>
+        let investments = [];
+
+        function addInvestment() {
+            let type = document.getElementById("investmentType").value;
+            let invested = parseFloat(document.getElementById("amountInvested").value);
+            let current = parseFloat(document.getElementById("currentValue").value);
+
+            if (type && !isNaN(invested) && !isNaN(current)) {
+                let profitLoss = current - invested;
+
+                investments.push({ type, invested, current, profitLoss });
+                updateTable();
+            } else {
+                alert("Please enter valid details.");
+            }
+        }
+
+        function updateTable() {
+            let tableBody = document.getElementById("portfolioTable");
+            tableBody.innerHTML = "";
+
+            let totalInvested = 0;
+            let totalValue = 0;
+            let totalProfit = 0;
+
+            investments.forEach(inv => {
+                totalInvested += inv.invested;
+                totalValue += inv.current;
+                totalProfit += inv.profitLoss;
+
+                let row = `<tr>
+                    <td>${inv.type}</td>
+                    <td>${inv.invested.toFixed(2)}</td>
+                    <td>${inv.current.toFixed(2)}</td>
+                    <td style="color: ${inv.profitLoss >= 0 ? 'green' : 'red'}">${inv.profitLoss.toFixed(2)}</td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+
+            document.getElementById("totalInvested").innerText = totalInvested.toFixed(2);
+            document.getElementById("totalValue").innerText = totalValue.toFixed(2);
+            document.getElementById("totalProfit").innerText = totalProfit.toFixed(2);
+        }
+    </script>
+
+</body>
+</html>

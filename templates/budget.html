@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget & Expense Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <header>
+        <h1>Budgeting & Expense Tracker</h1>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/budget">Budgeting</a>
+            <a href="/portfolio">Investment Portfolio</a>
+            <a href="/resource">Resources</a>
+            <a href="/sipcalc">SIP Calculator</a>
+            <a href="/emi">EMI Calculator</a>
+            <a href="/community">Community Hub</a>
+            <a href="/games">Games</a>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Track Your Expenses & Savings</h2>
+            
+            <form method="POST">
+                <label for="income">Total Monthly Income (₹)</label>
+                <input type="number" id="income" name="income" required>
+
+                <h3>Expenses</h3>
+
+                <label for="groceries">Groceries (₹)</label>
+                <input type="number" id="groceries" name="groceries">
+
+                <label for="home">Home Maintenance (₹)</label>
+                <input type="number" id="home" name="home">
+
+                <label for="shopping">Shopping (₹)</label>
+                <input type="number" id="shopping" name="shopping">
+
+                <label for="medicine">Medicine (₹)</label>
+                <input type="number" id="medicine" name="medicine">
+
+                <label for="transport">Transport (₹)</label>
+                <input type="number" id="transport" name="transport">
+
+                <label for="others">Other Expenses (₹)</label>
+                <input type="number" id="others" name="others">
+
+                <button type="submit">Calculate Savings</button>
+            </form>
+
+            {% if savings is not none %}
+                <div class="result">
+                    <h3>Total Savings: ₹{{ savings }}</h3>
+                    <canvas id="expenseChart"></canvas>
+                </div>
+            {% endif %}
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("budgetForm");
+            const ctx = document.getElementById("budgetChart").getContext("2d");
+            let budgetChartInstance = null;
+    
+            form.addEventListener("submit", function (event) {
+                event.preventDefault(); // Prevent page reload
+    
+                // Get input values
+                let income = parseFloat(document.getElementById("income").value);
+                let grocery = parseFloat(document.getElementById("grocery").value) || 0;
+                let medicine = parseFloat(document.getElementById("medicine").value) || 0;
+                let maintenance = parseFloat(document.getElementById("maintenance").value) || 0;
+                let shopping = parseFloat(document.getElementById("shopping").value) || 0;
+                let other = parseFloat(document.getElementById("other").value) || 0;
+    
+                // Validate inputs
+                if (isNaN(income) || income <= 0) {
+                    alert("Please enter a valid income!");
+                    return;
+                }
+    
+                // Calculate expenses and savings
+                let totalExpenses = grocery + medicine + maintenance + shopping + other;
+                let savings = income - totalExpenses;
+    
+                // Display results
+                document.getElementById("totalExpenses").textContent = `₹${totalExpenses.toFixed(2)}`;
+                document.getElementById("savings").textContent = `₹${savings.toFixed(2)}`;
+                document.getElementById("result").style.display = "block";
+    
+                // Destroy previous chart before drawing a new one
+                if (budgetChartInstance) {
+                    budgetChartInstance.destroy();
+                }
+    
+                // Create a new pie chart
+                budgetChartInstance = new Chart(ctx, {
+                    type: "pie",
+                    data: {
+                        labels: ["Grocery", "Medicine", "Home Maintenance", "Shopping", "Other Expenses", "Savings"],
+                        datasets: [{
+                            data: [grocery, medicine, maintenance, shopping, other, savings],
+                            backgroundColor: ["#ff6384", "#36a2eb", "#ffcd56", "#4bc0c0", "#9966ff", "#2ecc71"]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            });
+        });
+    </script>
+    
+
+</body>
+</html>
